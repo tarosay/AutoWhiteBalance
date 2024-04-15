@@ -234,16 +234,19 @@ namespace AutoWhiteBalance
             {
                 for (int x = 0; x < width; x++)
                 {
-                    //各点の色度をオフセットした結果のXYZ刺激値を求めます
+                    //XYZ刺激値から色度(x,y)を求めます
                     kx = xyz[0][y, x] / (xyz[0][y, x] + xyz[1][y, x] + xyz[2][y, x]);
                     ky = xyz[1][y, x] / (xyz[0][y, x] + xyz[1][y, x] + xyz[2][y, x]);
 
+                    //白色点座標からのオフセット分を引きます
                     kx -= offsetx;
                     ky -= offsety;
 
+                    //オフセットした色度(x,y)を使って刺激値XとZを再計算します
                     xyz[0][y, x] = kx / ky * xyz[1][y, x];
                     xyz[2][y, x] = ((1.0 - kx - ky) / ky​) * xyz[1][y, x];
 
+                    //刺激値XYZから線形RGBを求めます
                     lrgb[0] = XYZ2RGB[0, 0] * xyz[0][y, x] + XYZ2RGB[0, 1] * xyz[1][y, x] + XYZ2RGB[0, 2] * xyz[2][y, x];
                     lrgb[1] = XYZ2RGB[1, 0] * xyz[0][y, x] + XYZ2RGB[1, 1] * xyz[1][y, x] + XYZ2RGB[1, 2] * xyz[2][y, x];
                     lrgb[2] = XYZ2RGB[2, 0] * xyz[0][y, x] + XYZ2RGB[2, 1] * xyz[1][y, x] + XYZ2RGB[2, 2] * xyz[2][y, x];
@@ -256,15 +259,16 @@ namespace AutoWhiteBalance
                     lrgb[1] = Math.Max(0.0, lrgb[1]);
                     lrgb[2] = Math.Max(0.0, lrgb[2]);
 
-                    //線形RGBをRGBへ
+                    //線形RGBをγを使って0～255のRGBに変えます
                     rgb[0][y, x] = (byte)(Math.Pow(lrgb[0], 1.0 / gamma) * 255);
                     rgb[1][y, x] = (byte)(Math.Pow(lrgb[1], 1.0 / gamma) * 255);
                     rgb[2][y, x] = (byte)(Math.Pow(lrgb[2], 1.0 / gamma) * 255);
 
+                    //Bitmapに変換するためのbyte配列に入れます
                     byteArray[index++] = (byte)rgb[2][y, x];
                     byteArray[index++] = (byte)rgb[1][y, x];
                     byteArray[index++] = (byte)rgb[0][y, x];
-                    byteArray[index++] = 0xFF;
+                    byteArray[index++] = 0xFF;  //アルファ
                 }
             }
 
