@@ -237,6 +237,7 @@ namespace AutoWhiteBalance
                     //XYZ刺激値から色度(x,y)を求めます
                     kx = xyz[0][y, x] / (xyz[0][y, x] + xyz[1][y, x] + xyz[2][y, x]);
                     ky = xyz[1][y, x] / (xyz[0][y, x] + xyz[1][y, x] + xyz[2][y, x]);
+                    //xyz[1][y, x] *= 3.0; //輝度を変えたいときは、コメントを有効にして、ここの係数を変える
 
                     //白色点座標からのオフセット分を引きます
                     kx -= offsetx;
